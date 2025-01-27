@@ -13,14 +13,15 @@ pipeline {
 
     }
 
-    stages{
+    stages {
         stage('Security Scan: Dependencies') {
             steps {
                 script {
                     sh """
                     . venv/bin/activate
                     pip3 install safety
-                    safety check -r ./web-app/requirements.txt
+                    safety check -r ./web-app/server/requirements.txt
+                    safety check -r ./web-app/client/requirements.txt
                     """
                 }
             }
@@ -48,7 +49,7 @@ pipeline {
                 }
             }
         
-        
+        }
         stage('Push Docker Image') {
             steps {
                 script{
@@ -65,5 +66,4 @@ pipeline {
         }
 
     }
-}
 }
