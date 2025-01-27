@@ -17,7 +17,7 @@ pipeline {
         stage('Security Scan: Dependencies') {
             steps {
                 script {
-                    SecurityScans.scanDependencies('./web-app/client/package.json')
+                    SecurityScans.scanDependencies('./web-app/client/requirements.txt')
                 }
             }
         }
