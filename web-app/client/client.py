@@ -1,32 +1,39 @@
+from flask import Flask, request, jsonify, send_from_directory
 import requests
+import logging
 
-def main():
-    while True:
-        print("Enter two numbers and an operation (+, -, *, /):")
-        a = float(input("First number: "))
-        b = float(input("Second number: "))
-        operation = input("Operation: ").strip()
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-        if operation not in ["+", "-", "*", "/"]:
-            print("Invalid operation. Please enter one of +, -, *, /.")
-            continue
+app = Flask(__name__)
 
-        request_data = {"a": a, "b": b, "operation": operation}
+# Server URL
+SERVER_URL = "http://server:5000/compute"
 
-        try:
-            response = requests.post("http://server:5000/compute", json=request_data)
-            response_data = response.json()
 
-            if response.status_code == 200:
-                print(f"Result: {response_data['result']}")
-            else:
-                print(f"Error: {response_data.get('error', 'Unknown error')}")
-        except Exception as e:
-            print(f"An error occurred: {e}")
+@app.route('/')
+def index():
+    return send_from_directory('.', 'index.html')
 
-        again = input("Do you want to perform another operation? (yes/no): ").strip().lower()
-        if again != "yes":
-            break
+
+@app.route('/calculate', methods=['POST'])
+def calculate():
+    data = request.json
+    logger.info(f"Received calculation request: {data}")
+
+    try:
+        response = requests.post(SERVER_URL, json=data)
+        response_data = response.json()
+
+        logger.info(f"Server response: {response_data}")
+        return jsonify(response_data), response.status_code
+
+    except Exception as e:
+        error_msg = f"Error occurred: {str(e)}"
+        logger.error(error_msg)
+        return jsonify({"error": error_msg}), 500
+
 
 if __name__ == "__main__":
-    main()
+    app.run(host="0.0.0.0", port=5001, debug=True)

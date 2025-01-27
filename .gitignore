@@ -1,1 +1,7 @@
 .idea/*
+*.tfstate
+*.tfstate.backup
+.terraform/
+.DS_Store
+*.lock.*
+*.pem

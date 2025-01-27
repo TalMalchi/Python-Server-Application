@@ -1,8 +1,9 @@
 services:
   server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile-server
+    image:
+#    build:
+#      context: ./server
+#      dockerfile: Dockerfile-server
     ports:
       - "5000:5000"  # Exposing port 5000 for external access
     volumes:
@@ -12,9 +13,10 @@ services:
     container_name: flask-server
 
   client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile-client
+#    build:
+#      context: ./client
+#      dockerfile: Dockerfile-client
+    image:
     volumes:
       - ./client:/app
     depends_on:
