@@ -1,0 +1,52 @@
+@Library('pipeline-library') _
+pipeline {
+    agent any
+    environment {
+        AWS_REGION = 'us-east-1'
+        ECR_REPO_SERVER = 'pentera-server'
+        ECR_REPO_CLIENT = 'pentera-client'
+        AWS_ACCOUNT_ID = '390403894730'
+        URL_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+    }
+    parameters {
+        string(name: 'RELEASE_VERSION_CLIENT', defaultValue: 'latest', description: 'Release version for Client Docker image')
+
+    }
+
+    stages {
+        stage('Security Scan: Dependencies') {
+            steps {
+                script {
+                    SecurityScans.scanDependencies('./web-app/client/package.json')
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script{
+                    DockerCommands.loginToECR(AWS_REGION, URL_REGISTRY)
+
+                }
+            }
+        }
+
+        stage('Security Scan: Docker Image') {
+            steps {
+                script {
+                    SecurityScans.scanDockerImage(ECR_REPO_CLIENT)
+                }
+            }
+        
+        }
+        stage('Push Docker Image') {
+            steps {
+                script{
+                    DockerCommands.tagAndPushDockerImage(ECR_REPO_CLIENT, params.RELEASE_VERSION_CLIENT, URL_REGISTRY)
+                }
+                
+            }
+        }
+
+    }
+}
