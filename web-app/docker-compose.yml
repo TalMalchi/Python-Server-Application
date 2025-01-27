@@ -1,0 +1,30 @@
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile-server
+    ports:
+      - "5000:5000"  # Exposing port 5000 for external access
+    volumes:
+      - ./server:/app
+    networks:
+      - app-network
+    container_name: flask-server
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile-client
+    volumes:
+      - ./client:/app
+    depends_on:
+      - server
+    ports:
+      - "5001:5001"
+    networks:
+      - app-network
+    container_name: flask-client
+
+networks:
+  app-network:
+    driver: bridge
