@@ -47,9 +47,10 @@ pipeline {
         stage('Depoly'){
             steps{
                 script{
+                    //yq -i '.services.server.image = "${URL_REGISTRY}/${ECR_REPO_SERVER}:${params.RELEASE_VERSION_SERVER}"' ./web-app/docker-compose.yml
                     sh """
-                    yq -i '.services.server.image = "${URL_REGISTRY}/${ECR_REPO_SERVER}:${params.RELEASE_VERSION_SERVER}"' ./web-app/docker-compose.yml
-                    docker compose -f ./web-app/docker-compose.yml up 
+                    cd web-app
+                    docker compose up 
                     """
                 }
             }

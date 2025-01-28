@@ -1,22 +1,21 @@
 services:
   server:
-    image: 390403894730.dkr.ecr.us-east-1.amazonaws.com/pentera-client:latest
+    image: 390403894730.dkr.ecr.us-east-1.amazonaws.com/pentera-server:latest1
     # build:
     #  context: ./server
     #  dockerfile: Dockerfile
     ports:
-      - "5000:5000"  # Exposing port 5000 for external access
+      - "5000:5000" # Exposing port 5000 for external access
     volumes:
       - ./server:/app
     networks:
       - app-network
     container_name: flask-server
-
   client:
     # build:
     #  context: ./client
     #  dockerfile: Dockerfile
-    image: 390403894730.dkr.ecr.us-east-1.amazonaws.com/pentera-server:latest
+    image: 390403894730.dkr.ecr.us-east-1.amazonaws.com/pentera-client:latest
     volumes:
       - ./client:/app
     depends_on:
@@ -26,7 +25,6 @@ services:
     networks:
       - app-network
     container_name: flask-client
-
 networks:
   app-network:
     driver: bridge
