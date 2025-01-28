@@ -48,7 +48,7 @@ pipeline {
             steps{
                 script{
                     sh """
-                    yq -y '.services[0].image = "${URL_REGISTRY}/${ECR_REPO_SERVER}:${params.RELEASE_VERSION_SERVER}"' -i ./web-app/docker-compose.yml 
+                    yq -i '.services[0].image = "${URL_REGISTRY}/${ECR_REPO_SERVER}:${params.RELEASE_VERSION_SERVER}"' ./web-app/docker-compose.yml
                     docker compose -f ./web-app/docker-compose.yml up 
                     """
                 }
