@@ -32,7 +32,7 @@ pipeline {
         stage('Security Scan: Docker Image') {
             steps {
                 script {
-                    securityScans.scanDockerImage("${URL_REGISTRY}/${ECR_REPO_SERVER}:${params.RELEASE_VERSION_SERVER}")
+                    securityScans.scanDockerImage(ECR_REPO_SERVER)
                 }
             }
         }
@@ -41,6 +41,16 @@ pipeline {
             steps {
                 script {
                     dockerCommands.tagAndPushDockerImage(ECR_REPO_SERVER, params.RELEASE_VERSION_SERVER, URL_REGISTRY)
+                }
+            }
+        }
+        stage('Depoly'){
+            steps{
+                script{
+                    sh """
+                    yq '.services[0].image = "${URL_REGISTRY}/${ECR_REPO_SERVER}:${params.RELEASE_VERSION_SERVER}"' ./web-app/server/docker-compose.yml > ./web-app/server/docker-compose.yml
+                    docker compose -f ./web-app/docker-compose.yml up 
+                    """
                 }
             }
         }

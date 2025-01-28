@@ -1,9 +1,9 @@
 services:
   server:
-    image:
-#    build:
-#      context: ./server
-#      dockerfile: Dockerfile-server
+    image: 390403894730.dkr.ecr.us-east-1.amazonaws.com/pentera-client:latest
+    # build:
+    #  context: ./server
+    #  dockerfile: Dockerfile
     ports:
       - "5000:5000"  # Exposing port 5000 for external access
     volumes:
@@ -13,10 +13,10 @@ services:
     container_name: flask-server
 
   client:
-#    build:
-#      context: ./client
-#      dockerfile: Dockerfile-client
-    image:
+    # build:
+    #  context: ./client
+    #  dockerfile: Dockerfile
+    image: 390403894730.dkr.ecr.us-east-1.amazonaws.com/pentera-server:latest
     volumes:
       - ./client:/app
     depends_on:
