@@ -1,6 +1,6 @@
 services:
   server:
-    image: 390403894730.dkr.ecr.us-east-1.amazonaws.com/pentera-server:latest1
+    image: 390403894730.dkr.ecr.us-east-1.amazonaws.com/pentera-server:latest
     # build:
     #  context: ./server
     #  dockerfile: Dockerfile
