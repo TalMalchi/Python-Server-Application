@@ -1,38 +1,30 @@
 @Library('pipeline-library') _
+
 pipeline {
     agent any
     environment {
         AWS_REGION = 'us-east-1'
         ECR_REPO_SERVER = 'pentera-server'
-        ECR_REPO_CLIENT = 'pentera-client'
         AWS_ACCOUNT_ID = '390403894730'
         URL_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
     }
     parameters {
         string(name: 'RELEASE_VERSION_SERVER', defaultValue: 'latest', description: 'Release version for Server Docker image')
-
     }
 
     stages {
-        stage('Security Scan: Dependencies') {
+        stage('Login to ECR') {
             steps {
                 script {
-                    sh """
-                    . venv/bin/activate
-                    pip3 install safety
-                    safety check -r ./web-app/server/requirements.txt
-                    """
+                    dockerCommands.loginToECR(AWS_REGION, URL_REGISTRY)
                 }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script{
-                    sh """
-                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${URL_REGISTRY}
-                    docker build -t ${ECR_REPO_SERVER}:${params.RELEASE_VERSION_SERVER} ./web-app/server
-                    """
+                script {
+                    dockerCommands.buildDockerImage(ECR_REPO_SERVER, params.RELEASE_VERSION_SERVER, './web-app/server')
                 }
             }
         }
@@ -40,24 +32,17 @@ pipeline {
         stage('Security Scan: Docker Image') {
             steps {
                 script {
-                    sh """
-                    trivy image ${ECR_REPO_SERVER}
-                    """
+                    securityScans.scanDockerImage("${URL_REGISTRY}/${ECR_REPO_SERVER}:${params.RELEASE_VERSION_SERVER}")
                 }
-            }
-        
-        }
-        stage('Push Docker Image') {
-            steps {
-                script{
-                    sh """
-                    docker tag ${ECR_REPO_SERVER}:${params.RELEASE_VERSION_SERVER} ${URL_REGISTRY}/${ECR_REPO_SERVER}:${params.RELEASE_VERSION_SERVER}
-                    docker push ${URL_REGISTRY}/${ECR_REPO_SERVER}:${params.RELEASE_VERSION_SERVER}
-                    """
-                }
-                
             }
         }
 
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    dockerCommands.tagAndPushDockerImage(ECR_REPO_SERVER, params.RELEASE_VERSION_SERVER, URL_REGISTRY)
+                }
+            }
+        }
     }
 }

@@ -33,7 +33,7 @@
     state: started
     enabled: yes
 
-- name: Install Python Virtual Environment
-  apt:
-    name: python3.12-venv
-    state: present
+# - name: Install Python Virtual Environment
+#   apt:
+#     name: python3.12-venv
+#     state: present

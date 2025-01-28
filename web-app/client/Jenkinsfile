@@ -32,7 +32,7 @@ pipeline {
         stage('Security Scan: Docker Image') {
             steps {
                 script {
-                    securityScans.scanDockerImage("${URL_REGISTRY}/${ECR_REPO_CLIENT}:${params.RELEASE_VERSION_CLIENT}")
+                    securityScans.scanDockerImage("${ECR_REPO_CLIENT}")
                 }
             }
         }
