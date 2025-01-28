@@ -53,7 +53,7 @@ resource "aws_security_group" "jenkins-server" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = merge(local.tags, { Name = "${var.project_name}-ci-cd-server-sg" })
+  tags = merge(local.tags, { Name = "${var.project_name}-jenkins-server-sg" })
 }
 
 resource "aws_instance" "jenkins-server" {
@@ -61,7 +61,7 @@ resource "aws_instance" "jenkins-server" {
   instance_type = var.instance_type
   subnet_id     = var.subnet_id
   key_name      = aws_key_pair.deployed_key.key_name
-  tags = merge(local.tags, { Name = "${var.project_name}-ci-cd-server" })
+  tags = merge(local.tags, { Name = "${var.project_name}-jenkins-server" })
   security_groups = [aws_security_group.jenkins-server.id]
   user_data = <<-EOF
               #!/bin/bash
@@ -77,4 +77,13 @@ resource "aws_instance" "jenkins-server" {
               sudo chown ubuntu:ubuntu /home/ubuntu/jenkins-initial-password
   EOF
 }
+resource "local_file" "ansible_inventory" {
+  filename = "${path.cwd}/../ansible/invenroy/hosts.ini"
 
+content = <<EOT
+[jenkins]
+jenkins-server ansible_host=${aws_instance.jenkins-server.public_ip} ansible_user=ubuntu ansible_ssh_private_key_file=${path.cwd}/jenkins-server.pem
+EOT
+
+  file_permission = "0644"
+}

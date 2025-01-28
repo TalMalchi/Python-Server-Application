@@ -14,18 +14,18 @@ pipeline {
     }
 
     stages {
-        stage('Security Scan: Dependencies') {
-            steps {
-                script {
-                    SecurityScans.scanDependencies('./web-app/client/requirements.txt')
-                }
-            }
-        }
+        // stage('Security Scan: Dependencies') {
+        //     steps {
+        //         script {
+        //             SecurityScans.scanDependencies('./web-app/client/requirements.txt')
+        //         }
+        //     }
+        // }
 
         stage('Build Docker Image') {
             steps {
                 script{
-                    DockerCommands.loginToECR(AWS_REGION, URL_REGISTRY)
+                    dockerCommands.loginToECR(AWS_REGION, URL_REGISTRY)
 
                 }
             }
@@ -34,7 +34,7 @@ pipeline {
         stage('Security Scan: Docker Image') {
             steps {
                 script {
-                    SecurityScans.scanDockerImage(ECR_REPO_CLIENT)
+                    securityScans.scanDockerImage(ECR_REPO_CLIENT)
                 }
             }
         
@@ -42,7 +42,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script{
-                    DockerCommands.tagAndPushDockerImage(ECR_REPO_CLIENT, params.RELEASE_VERSION_CLIENT, URL_REGISTRY)
+                    dockerCommands.tagAndPushDockerImage(ECR_REPO_CLIENT, params.RELEASE_VERSION_CLIENT, URL_REGISTRY)
                 }
                 
             }

@@ -1,0 +1,6 @@
+- name: Configure Jenkins CI/CD environment
+  hosts: jenkins
+  become: true
+  roles:
+    - docker
+    - aws-cli
