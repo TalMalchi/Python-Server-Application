@@ -78,7 +78,7 @@ resource "aws_instance" "jenkins-server" {
   EOF
 }
 resource "local_file" "ansible_inventory" {
-  filename = "${path.cwd}/../ansible/invenroy/hosts.ini"
+  filename = "${path.cwd}/../ansible/inventory/hosts.ini"
 
 content = <<EOT
 [jenkins]
