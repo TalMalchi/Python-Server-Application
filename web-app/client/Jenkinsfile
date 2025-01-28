@@ -24,7 +24,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    dockerCommands.buildDockerImage(ECR_REPO_CLIENT, params.RELEASE_VERSION_CLIENT, './web-app/client')
+                    dockerCommands.buildDockerImage(ECR_REPO_CLIENT, params.RELEASE_VERSION_CLIENT, './web-app/client/Dockerfile-client')
                 }
             }
         }
