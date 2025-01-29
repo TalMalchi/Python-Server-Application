@@ -12,6 +12,20 @@ pipeline {
     }
 
     stages {
+        stage('Check for Changes') {
+            steps {
+                script {
+                    def changes = sh(script: "git diff --name-only HEAD~1 | grep '^web-app/server/' || true", returnStdout: true).trim()
+                    if (changes) {
+                        echo "Changes detected in web-app/server: \n${changes}"
+                    } else {
+                        echo "No changes in web-app/server. Skipping pipeline."
+                        currentBuild.result = 'ABORTED'
+                        error("No changes detected in web-app/server")
+                    }
+                }
+            }
+        }
         stage('Login to ECR') {
             steps {
                 script {
@@ -66,7 +80,7 @@ pipeline {
                     sh """
                     yq -i '.services.server.image = "${URL_REGISTRY}/${ECR_REPO_SERVER}:${params.RELEASE_VERSION_SERVER}"' ./web-app/docker-compose.yml
                     git add ./web-app/docker-compose.yml
-                    git coomit -m "Update client image version"
+                    git coomit -m "Update server image version"
                     git pull origin main
                     git push origin main
                     """
