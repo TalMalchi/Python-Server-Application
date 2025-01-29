@@ -4,7 +4,7 @@ pipeline {
     agent any
     environment {
         AWS_REGION = 'us-east-1'
-        ECR_REPO_SERVER = 'pentera-server'
+        ECR_REPO_SERVER = 'server-pentera'
         URL_REGISTRY = "public.ecr.aws/f4b7q1c5"
     }
     parameters {
