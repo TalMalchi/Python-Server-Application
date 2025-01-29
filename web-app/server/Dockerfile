@@ -10,6 +10,7 @@ WORKDIR /app
 # Step 6: Change ownership of the working directory to the non-root user
 RUN chown -R appuser /app
 
+RUN apk add curl
 # Step 7: Switch to the non-root user
 USER appuser
 

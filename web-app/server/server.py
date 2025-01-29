@@ -17,6 +17,10 @@ def perform_operation(operation, a, b):
     except Exception as e:
         return str(e)
 
+@app.route("/health", methods=["GET"])
+def health_check():
+    return jsonify({"status": "healthy"}), 200
+
 @app.route("/compute", methods=["POST"])
 def compute():
     data = request.json
