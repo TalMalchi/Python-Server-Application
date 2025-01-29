@@ -5,8 +5,7 @@ pipeline {
     environment {
         AWS_REGION = 'us-east-1'
         ECR_REPO_CLIENT = 'pentera-client'
-        AWS_ACCOUNT_ID = '390403894730'
-        URL_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+        URL_REGISTRY = "public.ecr.aws/f4b7q1c5"
     }
     parameters {
         string(name: 'RELEASE_VERSION_CLIENT', defaultValue: 'latest', description: 'Release version for Client Docker image')

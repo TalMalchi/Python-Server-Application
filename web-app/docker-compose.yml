@@ -1,28 +1,14 @@
 services:
   server:
-    image: 390403894730.dkr.ecr.us-east-1.amazonaws.com/pentera-server:latest
-    # build:
-    #  context: ./server
-    #  dockerfile: Dockerfile
+    image: public.ecr.aws/f4b7q1c5/server-pentera:latest
     ports:
       - "5000:5000" # Exposing port 5000 for external access
-    volumes:
-      - ./server:/app
     networks:
       - app-network
     container_name: flask-server
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+
   client:
-    # build:
-    #  context: ./client
-    #  dockerfile: Dockerfile
-    image: 390403894730.dkr.ecr.us-east-1.amazonaws.com/pentera-client:latest
-    volumes:
-      - ./client:/app
+    image: public.ecr.aws/f4b7q1c5/client-pentera:latest
     depends_on:
       - server
     ports:
