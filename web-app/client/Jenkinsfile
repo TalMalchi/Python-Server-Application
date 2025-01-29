@@ -13,10 +13,30 @@ pipeline {
     }
 
     stages {
+        stage('Check for Changes') {
+            steps {
+                script {
+                    def changes = sh(script: "git diff --name-only HEAD~1 | grep '^web-app/client/' || true", returnStdout: true).trim()
+                    if (changes) {
+                        echo "Changes detected in web-app/client: \n${changes}"
+                    } else {
+                        echo "No changes in web-app/client. Skipping pipeline."
+                        currentBuild.result = 'ABORTED'
+                        error("No changes detected in web-app/client")
+                    }
+                }
+            }
+        }
+    
         stage('Login to ECR') {
             steps {
                 script {
+                    try{
                     dockerCommands.loginToECR(AWS_REGION, URL_REGISTRY)
+                    }catch(Exception e){
+                        echo "ERROR: Failed to log in to ECR - ${e.message}"
+                        error("Failed to log in to ECR")
+                    }
                 }
             }
         }
@@ -24,7 +44,12 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
+                    try{
                     dockerCommands.buildDockerImage(ECR_REPO_CLIENT, params.RELEASE_VERSION_CLIENT, './web-app/client')
+                    } catch(Exception e){
+                        echo "ERROR: Failed to build Docker image - ${e.message}"
+                        error("Failed to build Docker image")
+                    }
                 }
             }
         }
@@ -32,7 +57,10 @@ pipeline {
         stage('Security Scan: Docker Image') {
             steps {
                 script {
+                    catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE'){
                     securityScans.scanDockerImage(ECR_REPO_CLIENT)
+                    }
+                }
                 }
             }
         }
@@ -40,8 +68,28 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
+                    try{
                     dockerCommands.tagAndPushDockerImage(ECR_REPO_CLIENT, params.RELEASE_VERSION_CLIENT, URL_REGISTRY)
+                    } catch(Exception e){
+                        echo "ERROR: Failed to push Docker image - ${e.message}"
+                        error("Failed to push Docker image")
+                    }
                 }
+            }
+        }
+
+        stage('Depoly'){
+            steps{
+                script{
+                    sh """
+                    yq -i '.services.client.image = "${URL_REGISTRY}/${ECR_REPO_CLIENT}:${params.RELEASE_VERSION_CLIENT}"' ./web-app/docker-compose.yml
+                    git add ./web-app/docker-compose.yml
+                    git coomit -m "Update client image version"
+                    git pull origin main
+                    git push origin main
+                    """
+
+            
             }
         }
     }
