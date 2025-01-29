@@ -32,7 +32,7 @@ pipeline {
                 script {
                     try{
                     dockerCommands.loginToECR(AWS_REGION, URL_REGISTRY)
-                    }catch(Exception e){
+                    } catch(Exception e){
                         echo "ERROR: Failed to log in to ECR - ${e.message}"
                         error("Failed to log in to ECR")
                     }

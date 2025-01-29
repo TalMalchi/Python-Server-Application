@@ -44,7 +44,7 @@ pipeline {
                 script {
                     try{
                     dockerCommands.buildDockerImage(ECR_REPO_SERVER, params.RELEASE_VERSION_SERVER, './web-app/server')
-                                    } catch(Exception e){
+                    } catch(Exception e){
                         echo "ERROR: Failed to build Docker image - ${e.message}"
                         error("Failed to build Docker image")
                     }
