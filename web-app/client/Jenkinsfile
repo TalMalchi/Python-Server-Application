@@ -83,7 +83,7 @@ pipeline {
                     sh """
                     yq -i '.services.client.image = "${URL_REGISTRY}/${ECR_REPO_CLIENT}:${params.RELEASE_VERSION_CLIENT}"' ./web-app/docker-compose.yml
                     git add ./web-app/docker-compose.yml
-                    git coomit -m "Update client image version"
+                    git commit -m "Update client image version"
                     git pull origin main
                     git push origin main
                     """
