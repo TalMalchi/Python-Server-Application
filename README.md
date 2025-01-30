@@ -60,8 +60,8 @@ cat /home/ubuntu/jenkins-initial-password
 ```
 
 #### CI Pipeline Execution
-Create 2 pipelines on jenkins: one for client proccess, the other for server proccess
-On a new commit on the repo , the respective Jenkins pipeline triggers according to change at client/ or server/ directory:
+Create 2 pipelines on jenkins: one for client proccess, the other for server proccess  
+On a new commit on the repo , the respective Jenkins pipeline triggers- according to change at client/ or server/ directory:
 - Builds a new Docker image
 - Pushes the image to ECR
 - Updates the Docker Compose file
